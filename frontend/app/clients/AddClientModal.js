@@ -22,21 +22,30 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await createClient(formData);
-    if (result) {
-      onSuccess(); // SWR actualizará clientes y cierra modal
-      setFormData({
-        nombre: "",
-        email: "",
-        telefono: "",
-        pais: "",
-        direccion: "",
-      });
-      onClose();
-    } else {
-      alert("❌ No se pudo agregar el cliente.");
+  
+    if (!formData.nombre.trim()) {
+      alert("⚠️ El nombre del cliente es obligatorio.");
+      return;
+    }
+  
+    try {
+      const result = await createClient(formData);
+      if (result) {
+        onSuccess?.(result);
+        setFormData({
+          nombre: "",
+          email: "",
+          telefono: "",
+          pais: "",
+          direccion: "",
+        });
+        onClose();
+      }
+    } catch (error) {
+      alert("❌ No se pudo agregar el cliente: " + error.message);
     }
   };
+  
 
   return (
     <AnimatePresence>

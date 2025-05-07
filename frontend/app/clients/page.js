@@ -6,7 +6,7 @@ import TransactionHistoryModal from "../../components/ui/TransactionHistoryModal
 import EditClientModal from "./EditClientModal";
 import AddClientModal from "./AddClientModal";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
-import { CopyPlus, FileText, FileSpreadsheet, UserPen, UserX } from "lucide-react";
+import { CopyPlus, UserRoundPlus, FileText, FileSpreadsheet, UserPen, UserX } from "lucide-react";
 import countries from "country-flag-emoji-json";
 import { deleteClient } from "../api/clients";
 
@@ -77,15 +77,15 @@ export default function ClientsPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="bg-gray-800 text-white border border-gray-600 p-3 rounded-lg flex-grow"
         />
-        <button onClick={() => setIsAddModalOpen(true)} className="bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
-          <CopyPlus className="w-5 h-5" /> Agregar
+        <button onClick={() => setIsAddModalOpen(true)} className="bg-orange-600 hover:bg-orange-500 text-white px-4 py-3 rounded-lg flex items-center gap-2">
+          <UserRoundPlus className="w-5 h-5" /> Agregar
         </button>
         <button onClick={() => window.open("http://127.0.0.1:8000/api/transaction/clientes/export/pdf/", "_blank")}
-          className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg flex items-center gap-2">
+          className="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-lg flex items-center gap-2">
           <FileText className="w-5 h-5" /> PDF
         </button>
         <button onClick={() => window.open("http://127.0.0.1:8000/api/transaction/clientes/export/excel/", "_blank")}
-          className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg flex items-center gap-2">
+          className="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-lg flex items-center gap-2">
           <FileSpreadsheet className="w-5 h-5" /> Excel
         </button>
       </div>

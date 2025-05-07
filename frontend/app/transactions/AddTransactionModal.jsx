@@ -1,6 +1,6 @@
 "use client";
-
-import { X, UserPlus } from "lucide-react";
+import toast from "react-hot-toast";
+import { X, UserRoundPlus } from "lucide-react";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
 import platformIcons from "@/utils/platformIcons";
@@ -53,10 +53,13 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
   };
 
   const handleNewClientSaved = async (newClient) => {
-    await refreshClientes();
-    setClient(newClient.id);
-    setAddClientOpen(false);
+    await refreshClientes();        // Actualiza la lista
+    setClient(newClient.id.toString());    // Selecciona automáticamente el nuevo cliente (en string por <select>)
+    setAddClientOpen(false);       // Cierra el modal de cliente
+    toast.success(`Cliente "${newClient.nombre}" agregado con éxito.`);
   };
+
+  
 
   if (!isOpen) return null;
 
@@ -103,7 +106,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
                 onClick={() => setAddClientOpen(true)}
                 className="text-orange-400 hover:text-orange-300 text-xs flex items-center gap-1"
               >
-                <UserPlus className="w-4 h-4" />
+                <UserRoundPlus className="w-4 h-4" />
                 Nuevo
               </button>
             </div>
@@ -210,10 +213,11 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
 
       {/* Modal Agregar Cliente */}
       <AddClientModal
-        isOpen={addClientOpen}
-        onClose={() => setAddClientOpen(false)}
-        onSave={handleNewClientSaved}
-      />
+  isOpen={addClientOpen}
+  onClose={() => setAddClientOpen(false)}
+  onSuccess={handleNewClientSaved}
+/>
+
     </div>
   );
 }

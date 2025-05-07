@@ -77,25 +77,25 @@ export default function TransactionsPage() {
           className="bg-gray-800 text-white border border-gray-600 p-3 rounded-lg flex-grow"
         />
 
-        <button onClick={() => setIsModalOpen(true)} className="bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <button onClick={() => setIsModalOpen(true)} className="bg-orange-600 hover:bg-orange-500 text-white px-4 py-3 rounded-lg flex items-center gap-2">
           <CopyPlus className="w-5 h-5" /> Agregar
         </button>
 
-        <button onClick={() => window.open("http://127.0.0.1:8000/api/transaction/export/pdf/", "_blank")} className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg flex items-center gap-2">
-          <FileText className="w-4 h-4" /> PDF
+        <button onClick={() => window.open("http://127.0.0.1:8000/api/transaction/export/pdf/", "_blank")} className="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-lg flex items-center gap-2">
+          <FileText className="w-5 h-5" /> PDF
         </button>
 
-        <button onClick={() => window.open("http://127.0.0.1:8000/api/transaction/export/excel/", "_blank")} className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg flex items-center gap-2">
-          <Sheet className="w-4 h-4" /> Excel
+        <button onClick={() => window.open("http://127.0.0.1:8000/api/transaction/export/excel/", "_blank")} className="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-lg flex items-center gap-2">
+          <Sheet className="w-5 h-5" /> Excel
         </button>
 
-        <label className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2">
+        <label className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-3 rounded-lg cursor-pointer flex items-center gap-2">
           <CloudDownload className="w-5 h-5" /> Importar
           <input type="file" accept=".xlsx" onChange={(e) => setFile(e.target.files[0])} hidden />
         </label>
 
         {file && (
-          <button onClick={handleUpload} className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-lg">
+          <button onClick={handleUpload} className="bg-orange-600 hover:bg-orange-500 px-4 py-3 rounded-lg">
             Confirmar
           </button>
         )}
