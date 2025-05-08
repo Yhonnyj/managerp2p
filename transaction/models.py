@@ -10,12 +10,17 @@ class Client(models.Model):
     direccion = models.TextField(null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
 
-
     class Meta:
-        db_table = "transaction_cliente"  # Mantiene el nombre correcto en la DB
+        db_table = "transaction_cliente"
+
+    def save(self, *args, **kwargs):
+        if self.nombre:
+            self.nombre = self.nombre.strip().lower()  # 🔒 Normaliza nombre
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.nombre
+        return self.nombre.title()  # 👁️ Se muestra como "Josellys Perez"
+
 
 
 class Transaction(models.Model):

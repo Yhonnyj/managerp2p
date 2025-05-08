@@ -7,6 +7,13 @@ class ClienteSerializer(serializers.ModelSerializer):
         model = Client
         fields = ["id", "nombre", "email", "telefono", "pais", "direccion"]
 
+    def validate_nombre(self, value):
+        normalized = value.strip().lower()
+        if Client.objects.filter(nombre__iexact=normalized).exists():
+            raise serializers.ValidationError("El cliente ya existe.")
+        return value
+
+        
 # ✅ Serializador de Transacciones
 class TransactionSerializer(serializers.ModelSerializer):
     sell_price = serializers.SerializerMethodField()
