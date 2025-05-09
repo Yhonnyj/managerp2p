@@ -80,7 +80,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
 
         {/* Cabecera */}
         <div className="border-b border-gray-700 pb-4 mb-6">
-          <h2 className="text-2xl font-bold text-orange-400">Agregar Nueva Transacción</h2>
+          <h2 className="text-2xl font-bold text-orange-400">Nueva Transacción</h2>
         </div>
 
         {/* Formulario */}
@@ -106,8 +106,8 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
                 onClick={() => setAddClientOpen(true)}
                 className="text-orange-400 hover:text-orange-300 text-xs flex items-center gap-1"
               >
-                <UserRoundPlus className="w-4 h-4" />
-                Nuevo
+                <UserRoundPlus className="w-5 h-5" />
+                
               </button>
             </div>
             <select
@@ -115,10 +115,10 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
               onChange={(e) => setClient(e.target.value)}
               className="bg-gray-800 p-2 rounded-lg w-full"
             >
-              <option value="">Seleccionar Cliente</option>
+              <option value="">Clientes</option>
               {clientesData?.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.nombre} #{c.id}
+                  {c.nombre} ID {c.id}
                 </option>
               ))}
             </select>
@@ -126,7 +126,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
 
           {/* Montos */}
           <div>
-            <label className="text-gray-400 mb-1 block">Monto USDT</label>
+            <label className="text-gray-400 mb-1 block">Monto</label>
             <input
               type="number"
               value={usdt}
@@ -137,7 +137,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
           </div>
 
           <div>
-            <label className="text-gray-400 mb-1 block">Monto USD</label>
+            <label className="text-gray-400 mb-1 block">Monto</label>
             <input
               type="number"
               value={usd}
@@ -149,7 +149,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
 
           {/* Plataformas */}
           <div className="col-span-2">
-            <label className="text-gray-400 mb-2 block">Selecciona Plataforma</label>
+            <label className="text-gray-400 mb-2 block">Plataforma</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {platforms.map((p) => (
                 <button
@@ -170,7 +170,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSave }) {
 
           {/* Métodos de pago */}
           <div className="col-span-2">
-            <label className="text-gray-400 mb-2 block">Selecciona Método de Pago</label>
+            <label className="text-gray-400 mb-2 block">Método de Pago</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {paymentMethods.map((m) => (
                 <button

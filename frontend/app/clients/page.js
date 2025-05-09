@@ -126,7 +126,7 @@ export default function ClientsPage() {
             </td>
             <td className="px-6 py-4">
               <div className="flex justify-center items-center h-full">
-                <span className="text-2xl">{getFlagEmoji(client.pais)}</span>
+                <span className="text-3xl">{getFlagEmoji(client.pais)}</span>
               </div>
             </td>
             <td className="px-6 py-4">

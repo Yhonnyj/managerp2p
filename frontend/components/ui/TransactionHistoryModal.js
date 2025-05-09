@@ -82,7 +82,7 @@ export default function TransactionHistoryModal({ isOpen, onClose, clientId }) {
               className="w-8 h-6 rounded border border-gray-900 shadow"
             />
             <div>
-              <h2 className="text-2xl font-bold">{client?.nombre || "Cliente"} <span className="text-gray-400">#{clientId}</span></h2>
+              <h2 className="text-2xl font-bold">{client?.nombre || "Cliente"} <span className="text-gray-400">ID {clientId}</span></h2>
               <p className="text-sm text-gray-400">
                 Total operaciones: <span className="font-semibold">{transactions.length}</span>
               </p>
