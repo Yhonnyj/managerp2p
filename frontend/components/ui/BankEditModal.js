@@ -35,9 +35,9 @@ export default function BankEditModal({ isOpen, onClose, bank, onSave }) {
 
     try {
       const result = await updateBank(bank.id, updatedBank);
-      await mutate("banks");
-      onSave?.(result);
-      onClose();
+      await mutate("banks"); // 🔁 Refresca BanksPage al instante
+      onSave?.(result);      // ✅ Notifica al padre si hace falta
+      onClose();             // ✅ Cierra el modal
     } catch (error) {
       console.error("❌ Error al actualizar banco:", error);
     }
@@ -59,7 +59,6 @@ export default function BankEditModal({ isOpen, onClose, bank, onSave }) {
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Botón cerrar */}
             <button
               onClick={onClose}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
@@ -67,10 +66,8 @@ export default function BankEditModal({ isOpen, onClose, bank, onSave }) {
               <X className="w-6 h-6" />
             </button>
 
-            {/* Título */}
             <h2 className="text-2xl font-bold mb-6 text-white">Editar Banco</h2>
 
-            {/* Campos */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <input
                 type="text"
@@ -96,7 +93,6 @@ export default function BankEditModal({ isOpen, onClose, bank, onSave }) {
               rows={3}
             />
 
-            {/* Switch ocultar */}
             <div className="flex items-center gap-2 mb-6">
               <input
                 type="checkbox"
@@ -107,7 +103,6 @@ export default function BankEditModal({ isOpen, onClose, bank, onSave }) {
               <label className="text-gray-300 text-sm">Ocultar banco</label>
             </div>
 
-            {/* Imagen del banco */}
             <div className="flex items-center gap-4 mb-8">
               {icon && (
                 <img
@@ -137,7 +132,6 @@ export default function BankEditModal({ isOpen, onClose, bank, onSave }) {
               />
             </div>
 
-            {/* Botones acción */}
             <div className="flex justify-end gap-4">
               <button
                 onClick={onClose}

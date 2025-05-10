@@ -1,21 +1,11 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
-import { Toaster } from "react-hot-toast"; // 👈 Importar Toaster
+import { Toaster } from "react-hot-toast";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
-
-  if (!isReady) {
-    return null;
-  }
 
   const hideSidebarRoutes = ["/login", "/register", "/forgot-password"];
   const shouldHideSidebar = hideSidebarRoutes.some(route =>
@@ -35,22 +25,21 @@ export default function ClientLayout({ children }) {
         </div>
       )}
 
-      {/* 🔥 Siempre ponemos el Toaster al final, para que funcione en toda la app */}
       <Toaster
         position="top-right"
         reverseOrder={false}
         toastOptions={{
           duration: 3000,
           style: {
-            background: "#1f2937", // gris oscuro
+            background: "#1f2937",
             color: "#fff",
-            border: "1px solid #fb923c", // borde naranja
+            border: "1px solid #fb923c",
             padding: "12px 16px",
             fontSize: "14px",
           },
           success: {
             style: {
-              background: "#15803d", // verde oscuro
+              background: "#15803d",
               color: "#fff",
               border: "1px solid #22c55e",
             },
@@ -61,7 +50,7 @@ export default function ClientLayout({ children }) {
           },
           error: {
             style: {
-              background: "#b91c1c", // rojo oscuro
+              background: "#b91c1c",
               color: "#fff",
               border: "1px solid #ef4444",
             },

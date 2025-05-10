@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -16,13 +17,18 @@ import {
 import axios from "axios";
 
 export default function Sidebar() {
-  const [username, setUsername] = useState("Usuario");
   const router = useRouter();
   const currentPath = usePathname();
+  const [username, setUsername] = useState(() => {
+    // Leer el valor inicial desde localStorage
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("username") || "Usuario";
+    }
+    return "Usuario";
+  });
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
-
     if (!accessToken) {
       router.push("/login");
       return;
@@ -33,10 +39,14 @@ export default function Sidebar() {
         const response = await axios.get("http://127.0.0.1:8000/api/core/profile/", {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-        setUsername(response.data.username || "Usuario");
+        const nombre = response.data.username || "Usuario";
+        setUsername(nombre);
+        localStorage.setItem("username", nombre); // Guardarlo en localStorage
       } catch (error) {
         console.error("Error al obtener usuario:", error);
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("username");
         router.push("/login");
       }
     };
@@ -47,6 +57,7 @@ export default function Sidebar() {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("username");
     router.push("/login");
   };
 

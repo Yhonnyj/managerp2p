@@ -1,23 +1,34 @@
 const BASE_URL = "http://localhost:8000/api/banks/";
 
 export async function getBanks() {
-  const allBanks = [];
-  let nextUrl = BASE_URL;
-
   try {
-    while (nextUrl) {
-      const res = await fetch(nextUrl);
-      if (!res.ok) throw new Error("Error al obtener los bancos");
+    const res = await fetch(BASE_URL);
+    if (!res.ok) throw new Error("Error al obtener los bancos");
 
-      const data = await res.json();
-      if (Array.isArray(data.results)) {
-        allBanks.push(...data.results);
-        nextUrl = data.next;
-      } else {
-        break;
-      }
+    const data = await res.json();
+
+    // ✅ Si viene como array directo (por Redis)
+    if (Array.isArray(data)) {
+      return data;
     }
-    return allBanks;
+
+    // 🧠 Por si vuelve a usarse paginación
+    if (Array.isArray(data.results)) {
+      const allBanks = [...data.results];
+      let nextUrl = data.next;
+
+      while (nextUrl) {
+        const res = await fetch(nextUrl);
+        if (!res.ok) break;
+        const nextData = await res.json();
+        allBanks.push(...(nextData.results || []));
+        nextUrl = nextData.next;
+      }
+
+      return allBanks;
+    }
+
+    return [];
   } catch (error) {
     console.error("❌ Error cargando bancos:", error);
     return [];

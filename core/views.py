@@ -10,7 +10,6 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
-
 from .models import Bank, BankTransaction, FinanceCategory, Transaction
 from .serializers import (
     UserSerializer,
@@ -72,9 +71,6 @@ def update_profile(request):
         "avatar": user.profile.avatar.url if user.profile.avatar else None
     }, status=status.HTTP_200_OK)
 
-
-
-
 # 👥 Usuarios
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -83,8 +79,27 @@ class UserViewSet(viewsets.ModelViewSet):
 
 # 🏦 Bancos
 class BankViewSet(viewsets.ModelViewSet):
-    queryset = Bank.objects.all().order_by('-created_at')
     serializer_class = BankSerializer
+
+    def get_queryset(self):
+        # ✅ Asegura que se incluyan transacciones en la respuesta
+        return Bank.objects.prefetch_related("transactions").order_by("-created_at")
+
+    def list(self, request, *args, **kwargs):
+        # ❌ Redis removido temporalmente
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def perform_create(self, serializer):
+        return super().perform_create(serializer)
+
+    def perform_update(self, serializer):
+        return super().perform_update(serializer)
+
+    def perform_destroy(self, instance):
+        return super().perform_destroy(instance)
+
 
 # 💳 Transacciones bancarias
 class BankTransactionViewSet(viewsets.ModelViewSet):

@@ -32,3 +32,4 @@ class TransactionAdmin(admin.ModelAdmin):
     list_display = ('date', 'amount', 'description', 'category')
     list_filter = ('category', 'date')
     search_fields = ('description',)
+

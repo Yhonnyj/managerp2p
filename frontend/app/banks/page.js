@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import Sidebar from "../../components/Sidebar";
 import BankModal from "../../components/ui/BankModal";
 import BankDetailsModal from "../../components/ui/BankDetailsModal";
 import BankEditModal from "../../components/ui/BankEditModal";
 import { getBanks } from "../api/bank";
-import { CopyPlus, BadgeDollarSign } from "lucide-react";
+import { CopyPlus, BadgeDollarSign, CircleDollarSign } from "lucide-react";
 
 const sections = [
   { title: "Dólares (USD)", currency: "$" },
@@ -20,6 +20,20 @@ const sections = [
   { title: "Emirates Dirham (AED)", currency: "د.إ" },
 ];
 
+// 🔄 Tasa PYG → USD
+const fetchPygRate = async () => {
+  const res = await fetch("https://open.er-api.com/v6/latest/PYG");
+  const data = await res.json();
+  return data.rates?.USD || 0;
+};
+
+// 🔄 Tasa CAD → USD
+const fetchCadRate = async () => {
+  const res = await fetch("https://open.er-api.com/v6/latest/CAD");
+  const data = await res.json();
+  return data.rates?.USD || 0;
+};
+
 export default function BanksPage() {
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -27,16 +41,18 @@ export default function BanksPage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [pygToUsdRate, setPygToUsdRate] = useState(0);
 
   const { data: banks = [], mutate } = useSWR("banks", getBanks);
+  const { data: pygToUsdRate, isLoading: loadingRate } = useSWR("pygToUsdRate", fetchPygRate);
+  const { data: cadToUsdRate, isLoading: loadingCadRate } = useSWR("cadToUsdRate", fetchCadRate);
 
-  useEffect(() => {
-    fetch("https://open.er-api.com/v6/latest/PYG")
-      .then(res => res.json())
-      .then(data => setPygToUsdRate(data.rates?.USD || 0))
-      .catch(() => setPygToUsdRate(0));
-  }, []);
+  if (
+    loadingRate ||
+    loadingCadRate ||
+    typeof pygToUsdRate !== "number" ||
+    typeof cadToUsdRate !== "number"
+  )
+    return null;
 
   const filteredBanks = banks.filter((bank) => {
     const term = search.toLowerCase();
@@ -69,7 +85,9 @@ export default function BanksPage() {
   };
 
   const formatBalance = (balance) => {
-    return Number(balance).toLocaleString(undefined, { minimumFractionDigits: 2 });
+    return Number(balance).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+    });
   };
 
   return (
@@ -78,32 +96,85 @@ export default function BanksPage() {
       <div className="flex-1 p-8 ml-64">
         <h1 className="text-3xl font-bold mb-8">Bancos</h1>
 
+        {/* TARJETAS DE RESUMEN */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {["$", "USD₮", "C$", "₲"].map((currency, idx) => {
-            let total = getTotalByCurrency(currency);
+  {["$", "USD₮", "C$", "₲"].map((currency, idx) => {
+    let total = getTotalByCurrency(currency);
+    let usdEquiv = 0;
 
-            if (currency === "$") {
-              const pygSection = banksData.find(s => s.currency === "₲");
-              const pygBalance = pygSection
-                ? pygSection.banks.reduce((acc, bank) => acc + calculateBankBalance(bank), 0)
-                : 0;
-              total += pygBalance * pygToUsdRate;
-            }
+    if (currency === "$") {
+      const pygSection = banksData.find((s) => s.currency === "₲");
+      const pygBalance = pygSection
+        ? pygSection.banks.reduce(
+            (acc, bank) => acc + calculateBankBalance(bank),
+            0
+          )
+        : 0;
+      total += pygBalance * pygToUsdRate;
 
-            return (
-              <div
-                key={idx}
-                className="flex flex-col items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-all relative"
-              >
-                <p className="text-sm text-gray-400">Total {currency}</p>
-                <p className="text-2xl font-bold text-orange-400 mt-2">
-                  {currency}{formatBalance(total)}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+      const cadSections = banksData.filter((s) => s.currency === "C$");
+      const cadBalance = cadSections.reduce((sum, section) => {
+        return (
+          sum +
+          section.banks.reduce(
+            (acc, bank) => acc + calculateBankBalance(bank),
+            0
+          )
+        );
+      }, 0);
+      total += cadBalance * cadToUsdRate;
+    }
 
+    if (currency === "₲") {
+      const pygSection = banksData.find((s) => s.currency === "₲");
+      const pygBalance = pygSection
+        ? pygSection.banks.reduce(
+            (acc, bank) => acc + calculateBankBalance(bank),
+            0
+          )
+        : 0;
+      usdEquiv = pygBalance * pygToUsdRate;
+    }
+
+    if (currency === "C$") {
+      const cadSections = banksData.filter((s) => s.currency === "C$");
+      const cadBalance = cadSections.reduce((sum, section) => {
+        return (
+          sum +
+          section.banks.reduce(
+            (acc, bank) => acc + calculateBankBalance(bank),
+            0
+          )
+        );
+      }, 0);
+      usdEquiv = cadBalance * cadToUsdRate;
+    }
+
+    return (
+      <div
+        key={idx}
+        className="relative group flex flex-col items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-all"
+      >
+        <p className="text-sm text-gray-400">Total {currency}</p>
+        <p className="text-2xl font-bold text-orange-400 mt-2">
+          {currency}
+          {formatBalance(total)}
+        </p>
+
+        {/* Tooltip extra solo para ₲ y C$ */}
+        {(currency === "₲" || currency === "C$") && (
+         <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs bg-gray-800 text-white px-2 py-1 rounded shadow-md pointer-events-none flex items-center gap-1">
+         <CircleDollarSign className="w-4 h-4 text-white" />
+         ${formatBalance(usdEquiv)} USD
+       </div>
+        )}
+      </div>
+    );
+  })}
+</div>
+
+
+        {/* BUSCADOR */}
         <input
           type="text"
           placeholder="Buscar banco o titular"
@@ -112,6 +183,7 @@ export default function BanksPage() {
           className="w-full p-3 mb-8 rounded-lg bg-gray-800 text-white border border-gray-700"
         />
 
+        {/* LISTA DE BANCOS POR SECCIÓN */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {banksData.map((section) => (
             <div
@@ -130,6 +202,7 @@ export default function BanksPage() {
                   <CopyPlus className="w-5 h-5" />
                 </button>
               </div>
+
               <div className="max-h-[300px] overflow-y-auto">
                 {section.banks.length === 0 ? (
                   <p className="text-center text-gray-400">No hay bancos.</p>
@@ -150,7 +223,11 @@ export default function BanksPage() {
                       >
                         <div className="flex items-center gap-3">
                           {bank.icon && (
-                            <img src={bank.icon} alt={bank.name} className="w-10 h-10 rounded-full object-cover" />
+                            <img
+                              src={bank.icon}
+                              alt={bank.name}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
                           )}
                           <div>
                             <p className="font-semibold text-white">{bank.name}</p>
@@ -159,13 +236,24 @@ export default function BanksPage() {
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-orange-400">
-                            {section.currency}{formatBalance(calculateBankBalance(bank))}
+                            {section.currency}
+                            {formatBalance(calculateBankBalance(bank))}
                           </p>
+
                           {section.currency === "₲" && (
                             <div className="relative group inline-block ml-1">
                               <BadgeDollarSign className="w-4 h-4 text-white" />
                               <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 ${formatBalance(calculateBankBalance(bank) * pygToUsdRate)} USD
+                              </div>
+                            </div>
+                          )}
+
+                          {section.currency === "C$" && (
+                            <div className="relative group inline-block ml-1">
+                              <BadgeDollarSign className="w-4 h-4 text-white" />
+                              <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                ${formatBalance(calculateBankBalance(bank) * cadToUsdRate)} USD
                               </div>
                             </div>
                           )}
@@ -175,17 +263,28 @@ export default function BanksPage() {
                   </>
                 )}
               </div>
+
               <div className="text-right text-orange-400 font-bold mt-4">
-                Total: {section.currency}{formatBalance(section.banks.reduce((acc, bank) => acc + calculateBankBalance(bank), 0))}
+                Total: {section.currency}
+                {formatBalance(
+                  section.banks.reduce(
+                    (acc, bank) => acc + calculateBankBalance(bank),
+                    0
+                  )
+                )}
               </div>
             </div>
           ))}
         </div>
 
+        {/* MODALES */}
         <BankModal
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
-          onSave={async () => { await mutate(); setModalOpen(false); }}
+          onSave={async () => {
+            await mutate();
+            setModalOpen(false);
+          }}
           selectedCategory={selectedCategory}
         />
 
