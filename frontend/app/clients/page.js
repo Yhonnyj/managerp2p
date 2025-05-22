@@ -6,7 +6,7 @@ import TransactionHistoryModal from "../../components/ui/TransactionHistoryModal
 import EditClientModal from "./EditClientModal";
 import AddClientModal from "./AddClientModal";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
-import { CopyPlus, UserRoundPlus, FileText, FileSpreadsheet, UserPen, UserX } from "lucide-react";
+import { CopyPlus, UserRoundPlus, FileText, FileSpreadsheet, UserRoundPen, UserRoundX } from "lucide-react";
 import countries from "country-flag-emoji-json";
 import { deleteClient } from "../api/clients";
 
@@ -65,7 +65,7 @@ export default function ClientsPage() {
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 min-h-screen text-white p-6 animate-fadeIn">
+    <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 min-h-screen text-white p-6">
       <h1 className="text-3xl font-bold mb-8">Clientes</h1>
 
       {/* Barra superior */}
@@ -138,13 +138,13 @@ export default function ClientsPage() {
                   }}
                   className="text-green-400 hover:text-green-300"
                 >
-                  <UserPen className="w-5 h-5" />
+                  <UserRoundPen className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setClientToDelete(client)}
                   className="text-red-500 hover:text-red-400"
                 >
-                  <UserX className="w-5 h-5" />
+                  <UserRoundX className="w-5 h-5" />
                 </button>
               </div>
             </td>

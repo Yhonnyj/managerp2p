@@ -35,12 +35,12 @@ class BankSerializer(serializers.ModelSerializer):
         model = Bank
         fields = ['id', 'name', 'holder', 'balance', 'email', 'category', 'created_at', 'icon', 'transactions']
 
-# CATEGORIAS FINANZAS
+# CATEGORÍAS FINANZAS
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ['id', 'category', 'date', 'amount', 'description']
+        fields = ['id', 'category', 'date', 'amount', 'description', 'type']  # ✅ Agregado 'type'
 
 class FinanceCategorySerializer(serializers.ModelSerializer):
     transactions = TransactionSerializer(many=True, read_only=True)

@@ -29,7 +29,8 @@ export default function ReportsPage() {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen p-8 flex-1 ml-64 animate-fadeIn">
+      <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen p-8 flex-1 ml-64">
+
         <h1 className="text-3xl font-bold mb-8">Reportes</h1>
 
         {/* Tarjetas */}

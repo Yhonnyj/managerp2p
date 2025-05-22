@@ -42,17 +42,27 @@ export default function BanksPage() {
   const [selectedBank, setSelectedBank] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const { data: banks = [], mutate } = useSWR("banks", getBanks);
+  const { data: banks, mutate } = useSWR("banks", getBanks);
+const banksLoading = !banks;
+
   const { data: pygToUsdRate, isLoading: loadingRate } = useSWR("pygToUsdRate", fetchPygRate);
   const { data: cadToUsdRate, isLoading: loadingCadRate } = useSWR("cadToUsdRate", fetchCadRate);
 
-  if (
-    loadingRate ||
-    loadingCadRate ||
-    typeof pygToUsdRate !== "number" ||
-    typeof cadToUsdRate !== "number"
-  )
-    return null;
+if (
+  banksLoading ||
+  loadingRate ||
+  loadingCadRate ||
+  typeof pygToUsdRate !== "number" ||
+  typeof cadToUsdRate !== "number"
+) {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+      <div className="h-10 w-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
+
+
 
   const filteredBanks = banks.filter((bank) => {
     const term = search.toLowerCase();

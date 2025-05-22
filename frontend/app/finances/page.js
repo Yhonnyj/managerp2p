@@ -56,8 +56,19 @@ export default function AnalisisFinanzas() {
     promedio_mensual,
   } = data || {};
 
-  if (isLoading) return <div className="text-white p-8">Cargando datos...</div>;
-  if (error) return <div className="text-red-500 p-8">Error al cargar los datos.</div>;
+  if (
+  isLoading ||
+  error ||
+  typeof pygToUsdRate !== "number" ||
+  pygToUsdRate === 0
+) {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+      <div className="h-10 w-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
+
 
   return (
     <div className="flex min-h-screen bg-gray-900 text-white">

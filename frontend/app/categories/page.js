@@ -5,7 +5,7 @@ import useSWR from "swr";
 import Sidebar from "../../components/Sidebar";
 import { getCategories } from "../api/categories";
 import CategoryCard from "./CategoryCard";
-import AddModalCategoryFinances from "../../components/ui/AddModalCategoryFinances";
+import AddModalCategoryFinances from "./AddModalCategoryFinances";
 import {
   BarChart,
   Bar,
@@ -29,6 +29,14 @@ export default function CategoriasPage() {
 
   const meses = ["Todos", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
   const { data, isLoading } = useSWR("categorias", getCategories);
+
+  if (isLoading || !data) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+        <div className="h-10 w-10 border-4 border-orange-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const categorias = (data?.results || []).map((cat) => {
     const transacciones = cat.transactions || [];
@@ -69,15 +77,12 @@ export default function CategoriasPage() {
       <div className="ml-64 px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-2xl font-bold mb-6">Categorías de Finanzas</h1>
 
-        {isLoading ? (
-          <div className="text-white">Cargando...</div>
-        ) : (
-          <div className="grid grid-cols-5 gap-5">
-            {categorias.map((cat, index) => (
-              <CategoryCard key={index} categoria={cat} onClick={() => setOpenModal(index)} />
-            ))}
-          </div>
-        )}
+        {/* Tarjetas */}
+        <div className="grid grid-cols-5 gap-5">
+          {categorias.map((cat, index) => (
+            <CategoryCard key={index} categoria={cat} onClick={() => setOpenModal(index)} />
+          ))}
+        </div>
 
         {/* Comparativa general */}
         <div className="mt-10">
@@ -132,11 +137,15 @@ export default function CategoriasPage() {
           </div>
         </div>
 
-        <AddModalCategoryFinances
-          open={openModal !== null}
-          onClose={() => setOpenModal(null)}
-          categoria={categorias[openModal]}
-        />
+       {/* Modal */}
+{openModal !== null && categorias[openModal] && (
+  <AddModalCategoryFinances
+    open={true}
+    onClose={() => setOpenModal(null)}
+    categoria={categorias[openModal]}
+  />
+)}
+
       </div>
     </div>
   );

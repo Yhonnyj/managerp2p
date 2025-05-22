@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import AddTransactionToCategoryModal from "./AddTransactionToCategoryModal";
 import EditTransactionModal from "./EditTransactionModal";
+import { mutate } from "swr";
 
 export default function AddModalCategoryFinances({ open, onClose, categoria }) {
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -36,14 +37,10 @@ export default function AddModalCategoryFinances({ open, onClose, categoria }) {
     const fechaValida =
       (!filtros.desde || item.fecha >= filtros.desde) &&
       (!filtros.hasta || item.fecha <= filtros.hasta);
-
     const textoValido =
       !filtros.texto || item.descripcion.toLowerCase().includes(filtros.texto.toLowerCase());
-
     const montoValido = !filtros.montoMin || item.monto >= parseFloat(filtros.montoMin);
-
     const tipoValido = !filtros.tipo || item.tipo === filtros.tipo;
-
     return fechaValida && textoValido && montoValido && tipoValido;
   });
 
@@ -52,11 +49,21 @@ export default function AddModalCategoryFinances({ open, onClose, categoria }) {
     setOpenEditModal(true);
   };
 
-  const guardarCambios = (transaccionEditada) => {
-    const actualizadas = transacciones.map((item) =>
-      item === transaccionActiva ? transaccionEditada : item
+  const handleAgregar = (nueva) => {
+    setTransacciones([...transacciones, nueva]);
+    mutate("categorias");
+  };
+
+  const handleGuardarEdicion = (editada) => {
+    setTransacciones((prev) =>
+      prev.map((t) => (t.id === editada.id ? editada : t))
     );
-    setTransacciones(actualizadas);
+    mutate("categorias");
+  };
+
+  const handleEliminar = (transaccion) => {
+    setTransacciones((prev) => prev.filter((t) => t.id !== transaccion.id));
+    mutate("categorias");
   };
 
   return (
@@ -132,7 +139,7 @@ export default function AddModalCategoryFinances({ open, onClose, categoria }) {
           <tbody>
             {transaccionesFiltradas.map((item, index) => (
               <tr
-                key={index}
+                key={item.id || index}
                 className="border-b border-gray-700 hover:bg-gray-800 cursor-pointer"
                 onClick={() => handleEditar(item)}
               >
@@ -159,22 +166,17 @@ export default function AddModalCategoryFinances({ open, onClose, categoria }) {
       <AddTransactionToCategoryModal
         open={openAddModal}
         onClose={() => setOpenAddModal(false)}
-        onAdd={(nueva) => setTransacciones([...transacciones, nueva])}
+        categoria={categoria}
+        onAdd={handleAgregar}
       />
 
-   <EditTransactionModal
-  open={openEditModal}
-  onClose={() => setOpenEditModal(false)}
-  transaccion={transaccionActiva}
-  onSave={guardarCambios}
-  onDelete={(transaccionAEliminar) => {
-    const actualizadas = transacciones.filter(
-      (item) => item !== transaccionAEliminar
-    );
-    setTransacciones(actualizadas);
-  }}
-/>
-
+      <EditTransactionModal
+        open={openEditModal}
+        onClose={() => setOpenEditModal(false)}
+        transaccion={transaccionActiva}
+        onSave={handleGuardarEdicion}
+        onDelete={handleEliminar}
+      />
     </div>
   );
 }

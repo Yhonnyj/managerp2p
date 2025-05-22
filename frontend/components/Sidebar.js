@@ -20,7 +20,6 @@ export default function Sidebar() {
   const router = useRouter();
   const currentPath = usePathname();
   const [username, setUsername] = useState(() => {
-    // Leer el valor inicial desde localStorage
     if (typeof window !== "undefined") {
       return localStorage.getItem("username") || "Usuario";
     }
@@ -41,7 +40,7 @@ export default function Sidebar() {
         });
         const nombre = response.data.username || "Usuario";
         setUsername(nombre);
-        localStorage.setItem("username", nombre); // Guardarlo en localStorage
+        localStorage.setItem("username", nombre);
       } catch (error) {
         console.error("Error al obtener usuario:", error);
         localStorage.removeItem("accessToken");
@@ -67,43 +66,42 @@ export default function Sidebar() {
         <img src="/logo.png" alt="Logo" className="w-50 h-auto mx-auto mb-6" />
       </Link>
 
-      <nav className="flex flex-col space-y-2 flex-grow">
-        <Link href="/dashboard" className={`flex items-center gap-2 px-4 py-2 rounded transition ${currentPath === "/dashboard" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <Home className="w-5 h-5" />
+      <nav className="flex flex-col space-y-2 flex-grow text-[16px]">
+        <Link href="/dashboard" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/dashboard" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
+          <Home className="w-6 h-6" />
           Dashboard
         </Link>
-        <Link href="/transactions" className={`flex items-center gap-2 px-4 py-2 rounded transition ${currentPath === "/transactions" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <ArrowLeftRight className="w-5 h-5" />
+        <Link href="/transactions" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/transactions" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
+          <ArrowLeftRight className="w-6 h-6" />
           Transacciones
         </Link>
-        <Link href="/clients" className={`flex items-center gap-2 px-4 py-2 rounded transition ${currentPath === "/clients" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <Users className="w-5 h-5" />
+        <Link href="/clients" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/clients" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
+          <Users className="w-6 h-6" />
           Clientes
         </Link>
-        <Link href="/reports" className={`flex items-center gap-2 px-4 py-2 rounded transition ${currentPath === "/reports" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <ChartNoAxesCombined className="w-5 h-5" />
+        <Link href="/reports" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/reports" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
+          <ChartNoAxesCombined className="w-6 h-6" />
           Reportes
         </Link>
-        <Link href="/banks" className={`flex items-center gap-2 px-4 py-2 rounded transition ${currentPath === "/banks" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <Landmark className="w-5 h-5" />
+        <Link href="/banks" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/banks" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
+          <Landmark className="w-6 h-6" />
           Bancos
         </Link>
-        <Link href="/finances" className={`flex items-center gap-2 px-4 py-2 rounded transition ${currentPath === "/finances" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <CreditCard className="w-5 h-5" />
+        <Link href="/finances" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/finances" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
+          <CreditCard className="w-6 h-6" />
           Finanzas
         </Link>
-        <Link href="/categories" className={`flex items-center gap-2 px-4 py-2 rounded transition ${currentPath === "/categories" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <FolderKanban className="w-5 h-5" />
+        <Link href="/categories" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/categories" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
+          <FolderKanban className="w-6 h-6" />
           Categorías
         </Link>
 
-        <button onClick={handleLogout} className="mt-2 flex items-center gap-2 px-4 py-2 hover:bg-orange-400/50">
-          <LogOut className="w-5 h-5" />
+        <button onClick={handleLogout} className="mt-2 flex items-center gap-3 px-4 py-2 hover:bg-orange-400/50 text-[16px]">
+          <LogOut className="w-6 h-6" />
           Cerrar Sesión
         </button>
       </nav>
 
-      {/* Usuario en el Sidebar - ahora clickeable */}
       <Link
         href="/profile"
         className="mt-6 flex items-center space-x-4 border-t border-gray-700 pt-4 hover:bg-gray-700 px-3 py-2 rounded transition"
@@ -111,7 +109,7 @@ export default function Sidebar() {
         <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-orange-400 font-bold uppercase">
           {username[0]}
         </div>
-        <span className="text-gray-300 font-semibold">{username}</span>
+        <span className="text-gray-300 font-semibold text-[16px]">{username}</span>
       </Link>
     </aside>
   );

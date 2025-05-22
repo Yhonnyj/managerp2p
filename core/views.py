@@ -6,7 +6,7 @@ from django.db.models import Sum, Case, When, F, DecimalField
 from rest_framework import status, viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -168,10 +168,21 @@ class BankDashboardView(APIView):
 
 
 
-# 📁 Categorías de finanzas
 class FinanceCategoryViewSet(viewsets.ModelViewSet):
     queryset = FinanceCategory.objects.all()
     serializer_class = FinanceCategorySerializer
+
+    @action(detail=True, methods=["post"])
+    def transactions(self, request, pk=None):
+        category = self.get_object()
+        data = request.data.copy()
+        data["category"] = category.id
+
+        serializer = TransactionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 💵 Transacciones (vista general)

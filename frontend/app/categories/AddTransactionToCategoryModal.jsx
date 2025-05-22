@@ -1,14 +1,51 @@
 "use client";
 import { useState } from "react";
+import { mutate } from "swr";
 
-export default function AddTransactionToCategoryModal({ open, onClose, onAdd }) {
+const API_BASE_URL = "http://127.0.0.1:8000/api/finance-categories/";
+
+export default function AddTransactionToCategoryModal({ open, onClose, categoria }) {
   const [form, setForm] = useState({
     fecha: "",
     descripcion: "",
     monto: "",
+    tipo: "Ingreso",
   });
 
-  if (!open) return null;
+  if (!open || !categoria?.id) return null; // 🔒 Validamos que haya ID
+
+  const handleSubmit = async () => {
+    if (!form.fecha || !form.descripcion || !form.monto) {
+      alert("⚠️ Todos los campos son obligatorios.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("accessToken");
+
+      const res = await fetch(`${API_BASE_URL}${categoria.id}/transactions/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          date: form.fecha,
+          description: form.descripcion,
+          amount: form.monto,
+          type: form.tipo,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Error al guardar");
+
+      await mutate("categorias");
+      setForm({ fecha: "", descripcion: "", monto: "", tipo: "Ingreso" });
+      onClose();
+    } catch {
+      alert("❌ Error al agregar la transacción");
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-[rgba(0,0,0,0.6)] flex items-center justify-center z-50">
@@ -50,6 +87,17 @@ export default function AddTransactionToCategoryModal({ open, onClose, onAdd }) 
               placeholder="Ej. 150"
             />
           </div>
+          <div>
+            <label className="text-sm text-gray-300">Tipo</label>
+            <select
+              value={form.tipo}
+              onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+              className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-lg"
+            >
+              <option value="Ingreso">Ingreso</option>
+              <option value="Egreso">Egreso</option>
+            </select>
+          </div>
         </div>
 
         <div className="mt-6 flex justify-end gap-2">
@@ -60,17 +108,7 @@ export default function AddTransactionToCategoryModal({ open, onClose, onAdd }) 
             Cancelar
           </button>
           <button
-            onClick={() => {
-              if (form.fecha && form.descripcion && form.monto) {
-                onAdd({
-                  fecha: form.fecha,
-                  descripcion: form.descripcion,
-                  monto: parseFloat(form.monto),
-                });
-                setForm({ fecha: "", descripcion: "", monto: "" });
-                onClose();
-              }
-            }}
+            onClick={handleSubmit}
             className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
           >
             Agregar

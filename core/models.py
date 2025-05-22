@@ -93,6 +93,11 @@ class Transaction(models.Model):
     date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(blank=True)
+    type = models.CharField(  # ✅ este campo es necesario
+        max_length=10,
+        choices=[("Ingreso", "Ingreso"), ("Egreso", "Egreso")],
+        default="Ingreso"
+    )
 
     def __str__(self):
         return f"{self.date} - {self.category.name}: ${self.amount}"
