@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -40,64 +41,71 @@ export default function Login() {
   };
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center bg-[url('/bg-pattern.svg')] bg-cover bg-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl px-8 py-10 w-full max-w-md">
-        {/* Título */}
-        <h2 className="text-2xl font-bold text-center text-gray-900">Entrar</h2>
-        <p className="text-sm text-center text-gray-500 mb-6">para continuar a Manager P2P</p>
+    <main className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-3xl px-10 py-12 w-full max-w-md"
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-4xl font-bold text-center text-white"
+        >
+          Iniciar Sesión
+        </motion.h2>
+        <p className="text-sm text-center text-gray-300 mt-2 mb-8">
+          Accede a tu cuenta de <span className="text-orange-400 font-semibold">Manager P2P</span>
+        </p>
 
         <form onSubmit={handleLogin} className="space-y-6">
-          {/* Usuario */}
           <div>
-            <label className="block text-sm text-gray-700 mb-1">Usuario</label>
+            <label className="block text-sm text-gray-300 mb-1">Usuario</label>
             <input
               type="text"
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 border border-gray-700 bg-gray-900 text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-inner"
             />
           </div>
 
-          {/* Contraseña */}
           <div className="relative">
-            <label className="block text-sm text-gray-700 mb-1">Contraseña</label>
+            <label className="block text-sm text-gray-300 mb-1">Contraseña</label>
             <input
               type={showPass ? "text" : "password"}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 pr-10 border border-gray-700 bg-gray-900 text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-inner"
             />
             <button
               type="button"
               onClick={() => setShowPass(!showPass)}
-              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-[38px] text-gray-400 hover:text-white"
             >
               {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
 
-          {/* Botón */}
-          <button
+          <motion.button
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3 rounded-md flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed"
+            whileTap={{ scale: 0.97 }}
+            className="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3 rounded-xl flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Continuar"}
-          </button>
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar"}
+          </motion.button>
 
-          {/* Error */}
-          {error && (
-            <p className="text-red-600 text-center text-sm mt-1">{error}</p>
-          )}
+          {error && <p className="text-red-400 text-center text-sm mt-1">{error}</p>}
         </form>
 
-        {/* Footer */}
-        <p className="text-xs text-gray-400 text-center mt-6">
-          Secured by <span className="font-semibold">Caibo Secure</span>
+        <p className="text-xs text-gray-500 text-center mt-6">
+          Plataforma cifrada <span className="font-semibold text-orange-400">Caibo Secure</span>
         </p>
-      </div>
+      </motion.div>
     </main>
   );
 }

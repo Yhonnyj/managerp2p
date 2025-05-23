@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import useSWR from "swr";
 import Sidebar from "../../components/Sidebar";
@@ -42,15 +41,12 @@ export default function CategoriasPage() {
     const transacciones = cat.transactions || [];
 
     const dataMensual = {};
-
-    // Sumar montos por mes
     for (const t of transacciones) {
       const mes = getMesCorto(t.date);
       const monto = parseFloat(t.amount);
       dataMensual[mes] = (dataMensual[mes] || 0) + monto;
     }
 
-    // ✅ Crear data para todos los meses, incluso si no hay datos
     const dataGrafico = meses.slice(1).map((mes) => ({
       name: mes,
       value: dataMensual[mes] || 0,
@@ -64,9 +60,12 @@ export default function CategoriasPage() {
       fillColor: cat.color || "#3b82f6",
       data: dataGrafico,
       transaccionesList: transacciones.map((t) => ({
-        fecha: t.date,
-        monto: parseFloat(t.amount),
-        descripcion: t.description,
+        id: t.id,
+        date: t.date,
+        amount: parseFloat(t.amount),
+        description: t.description,
+        type: t.type,
+        category: t.category,
       })),
     };
   });
@@ -137,15 +136,15 @@ export default function CategoriasPage() {
           </div>
         </div>
 
-       {/* Modal */}
-{openModal !== null && categorias[openModal] && (
-  <AddModalCategoryFinances
-    open={true}
-    onClose={() => setOpenModal(null)}
-    categoria={categorias[openModal]}
-  />
-)}
-
+        {/* Modal */}
+        {openModal !== null && categorias[openModal] && (
+          <AddModalCategoryFinances
+            open={true}
+            onClose={() => setOpenModal(null)}
+            categoria={categorias[openModal]}
+            categorias={data?.results || []}
+          />
+        )}
       </div>
     </div>
   );

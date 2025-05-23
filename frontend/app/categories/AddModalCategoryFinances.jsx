@@ -1,10 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import AddTransactionToCategoryModal from "./AddTransactionToCategoryModal";
 import EditTransactionModal from "./EditTransactionModal";
 import { mutate } from "swr";
+import { CopyPlus } from "lucide-react";
 
-export default function AddModalCategoryFinances({ open, onClose, categoria }) {
+
+export default function AddModalCategoryFinances({ open, onClose, categoria, categorias = [] }) {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [transaccionActiva, setTransaccionActiva] = useState(null);
@@ -16,6 +19,10 @@ export default function AddModalCategoryFinances({ open, onClose, categoria }) {
     montoMin: "",
     tipo: "",
   });
+
+  const categoriaCompleta = categorias.find(
+    (c) => c.nombre === categoria.nombre || c.name === categoria.nombre
+  );
 
   useEffect(() => {
     if (categoria?.transaccionesList) {
@@ -30,8 +37,6 @@ export default function AddModalCategoryFinances({ open, onClose, categoria }) {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
-
-  if (!open || !categoria) return null;
 
   const transaccionesFiltradas = transacciones.filter((item) => {
     const fechaValida =
@@ -67,116 +72,131 @@ export default function AddModalCategoryFinances({ open, onClose, categoria }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-[rgba(0,0,0,0.6)] flex items-center justify-center z-50">
-      <div className="bg-gray-900 text-white w-full max-w-3xl rounded-2xl shadow-lg p-6">
-        {/* Encabezado */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">{categoria.nombre}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-red-400 text-xl font-bold">
-            ×
-          </button>
-        </div>
-
-        {/* Botón y filtros */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-3">
-            <button
-              onClick={() => setOpenAddModal(true)}
-              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm"
-            >
-              + Agregar transacción
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-2 text-sm">
-            <input
-              type="date"
-              value={filtros.desde}
-              onChange={(e) => setFiltros({ ...filtros, desde: e.target.value })}
-              className="bg-gray-800 rounded px-3 py-2 w-full"
-            />
-            <input
-              type="date"
-              value={filtros.hasta}
-              onChange={(e) => setFiltros({ ...filtros, hasta: e.target.value })}
-              className="bg-gray-800 rounded px-3 py-2 w-full"
-            />
-            <input
-              type="text"
-              value={filtros.texto}
-              onChange={(e) => setFiltros({ ...filtros, texto: e.target.value })}
-              className="bg-gray-800 rounded px-3 py-2 w-full"
-              placeholder="Descripción"
-            />
-            <input
-              type="number"
-              value={filtros.montoMin}
-              onChange={(e) => setFiltros({ ...filtros, montoMin: e.target.value })}
-              className="bg-gray-800 rounded px-3 py-2 w-full"
-              placeholder="Monto mínimo"
-            />
-            <select
-              value={filtros.tipo}
-              onChange={(e) => setFiltros({ ...filtros, tipo: e.target.value })}
-              className="bg-gray-800 rounded px-3 py-2 w-full col-span-1 sm:col-span-2 lg:col-span-1"
-            >
-              <option value="">Todos los tipos</option>
-              <option value="Ingreso">Ingreso</option>
-              <option value="Egreso">Egreso</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Tabla */}
-        <table className="w-full text-sm">
-          <thead className="border-b border-gray-600">
-            <tr>
-              <th className="text-left py-2">Fecha</th>
-              <th className="text-left py-2">Descripción</th>
-              <th className="text-right py-2">Monto</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transaccionesFiltradas.map((item, index) => (
-              <tr
-                key={item.id || index}
-                className="border-b border-gray-700 hover:bg-gray-800 cursor-pointer"
-                onClick={() => handleEditar(item)}
-              >
-                <td className="py-2">{item.fecha}</td>
-                <td className="py-2">{item.descripcion}</td>
-                <td className="py-2 text-right">${item.monto}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* Botón cerrar */}
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white"
+    <AnimatePresence>
+      {open && categoria && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="w-full max-w-4xl bg-gray-900 text-white rounded-2xl shadow-2xl p-6 relative"
           >
-            Cerrar
-          </button>
-        </div>
-      </div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-semibold">{categoria.nombre}</h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-red-500 text-2xl transition"
+              >
+                ×
+              </button>
+            </div>
 
-      {/* Modales */}
-      <AddTransactionToCategoryModal
-        open={openAddModal}
-        onClose={() => setOpenAddModal(false)}
-        categoria={categoria}
-        onAdd={handleAgregar}
-      />
+          <div className="flex justify-end mb-4">
+  <button
+    onClick={() => setOpenAddModal(true)}
+    className="bg-orange-600 hover:bg-orange-700 text-white text-sm px-4 py-2 rounded-xl shadow flex items-center gap-2 transition"
+  >
+    <CopyPlus className="w-4 h-4" />
+    Agregar transacción
+  </button>
+</div>
 
-      <EditTransactionModal
-        open={openEditModal}
-        onClose={() => setOpenEditModal(false)}
-        transaccion={transaccionActiva}
-        onSave={handleGuardarEdicion}
-        onDelete={handleEliminar}
-      />
-    </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 text-sm">
+              <input
+                type="date"
+                value={filtros.desde}
+                onChange={(e) => setFiltros({ ...filtros, desde: e.target.value })}
+                className="rounded-xl bg-gray-800 border border-gray-700 px-3 py-2 w-full text-white placeholder-gray-400"
+              />
+              <input
+                type="date"
+                value={filtros.hasta}
+                onChange={(e) => setFiltros({ ...filtros, hasta: e.target.value })}
+                className="rounded-xl bg-gray-800 border border-gray-700 px-3 py-2 w-full text-white"
+              />
+              <input
+                type="text"
+                placeholder="Descripción"
+                value={filtros.texto}
+                onChange={(e) => setFiltros({ ...filtros, texto: e.target.value })}
+                className="rounded-xl bg-gray-800 border border-gray-700 px-3 py-2 w-full text-white"
+              />
+              <input
+                type="number"
+                placeholder="Monto mínimo"
+                value={filtros.montoMin}
+                onChange={(e) => setFiltros({ ...filtros, montoMin: e.target.value })}
+                className="rounded-xl bg-gray-800 border border-gray-700 px-3 py-2 w-full text-white"
+              />
+              <select
+                value={filtros.tipo}
+                onChange={(e) => setFiltros({ ...filtros, tipo: e.target.value })}
+                className="rounded-xl bg-gray-800 border border-gray-700 px-3 py-2 w-full text-white"
+              >
+                <option value="">Todos los tipos</option>
+                <option value="Ingreso">Ingreso</option>
+                <option value="Egreso">Egreso</option>
+              </select>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm table-auto">
+                <thead className="border-b border-gray-700 text-left">
+                  <tr>
+                    <th className="py-2">Fecha</th>
+                    <th className="py-2">Descripción</th>
+                    <th className="py-2 text-right">Monto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transaccionesFiltradas.map((item, index) => (
+                    <tr
+                      key={item.id || index}
+                      onClick={() => handleEditar(item)}
+                      className="hover:bg-gray-800 transition cursor-pointer border-b border-gray-800"
+                    >
+                      <td className="py-2">{item.date}</td>
+                      <td className="py-2">{item.description}</td>
+                      <td className="py-2 text-right">${item.amount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 rounded-xl border border-teal-700 hover:bg-teal-600 text-sm transition"
+              >
+                Cerrar
+              </button>
+            </div>
+          </motion.div>
+
+          <AddTransactionToCategoryModal
+            open={openAddModal}
+            onClose={() => setOpenAddModal(false)}
+            categoria={categoriaCompleta}
+            onAdd={handleAgregar}
+          />
+
+          <EditTransactionModal
+            open={openEditModal}
+            onClose={() => setOpenEditModal(false)}
+            transaccion={transaccionActiva}
+            onSave={handleGuardarEdicion}
+            onDelete={handleEliminar}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
