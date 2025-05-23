@@ -19,12 +19,7 @@ import axios from "axios";
 export default function Sidebar() {
   const router = useRouter();
   const currentPath = usePathname();
-  const [username, setUsername] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("username") || "Usuario";
-    }
-    return "Usuario";
-  });
+  const [username, setUsername] = useState("Usuario");
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -35,17 +30,20 @@ export default function Sidebar() {
 
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/core/profile/", {
+        const response = await axios.get("http://127.0.0.1:8000/api/auth/user/", {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-        const nombre = response.data.username || "Usuario";
+        const nombre =
+          response.data.name ||
+          response.data.username ||
+          response.data.email ||
+          "Usuario";
+
         setUsername(nombre);
         localStorage.setItem("username", nombre);
       } catch (error) {
         console.error("Error al obtener usuario:", error);
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("username");
+        localStorage.clear();
         router.push("/login");
       }
     };
@@ -53,10 +51,20 @@ export default function Sidebar() {
     fetchUserProfile();
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("username");
+  const handleLogout = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    try {
+      await axios.post("http://127.0.0.1:8000/api/auth/logout/", null, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    } catch (error) {
+      console.warn("Logout falló en backend:", error.response?.data || error.message);
+    }
+
+    localStorage.clear();
     router.push("/login");
   };
 
@@ -102,15 +110,17 @@ export default function Sidebar() {
         </button>
       </nav>
 
-      <Link
-        href="/profile"
-        className="mt-6 flex items-center space-x-4 border-t border-gray-700 pt-4 hover:bg-gray-700 px-3 py-2 rounded transition"
-      >
-        <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-orange-400 font-bold uppercase">
-          {username[0]}
-        </div>
-        <span className="text-gray-300 font-semibold text-[16px]">{username}</span>
-      </Link>
+      {typeof window !== "undefined" && localStorage.getItem("accessToken") && (
+        <Link
+          href="/profile"
+          className="mt-6 flex items-center space-x-4 border-t border-gray-700 pt-4 hover:bg-gray-700 px-3 py-2 rounded transition"
+        >
+          <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-orange-400 font-bold uppercase">
+            {username[0]}
+          </div>
+          <span className="text-gray-300 font-semibold text-[16px]">{username}</span>
+        </Link>
+      )}
     </aside>
   );
 }

@@ -741,10 +741,16 @@ def import_transactions_from_excel(request):
             "cliente": "client",
             "fecha": "date",
             "plataforma": "platform",
+            "metodo_pago": "payment_method",
             "transaction_type": "transaction_type"
         }
 
         df.rename(columns=column_mapping, inplace=True)
+
+        # ✅ Convierte los valores negativos a positivos automáticamente
+        df["usdt"] = df["usdt"].abs()
+        df["usd"] = df["usd"].abs()
+        df["fee"] = df["fee"].abs()
 
         required_columns = set(column_mapping.values())
         missing_columns = required_columns - set(df.columns)
@@ -754,20 +760,30 @@ def import_transactions_from_excel(request):
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
         for _, row in df.iterrows():
-            client, _ = Client.objects.get_or_create(nombre=row["client"])
-            tipo = str(row["transaction_type"]).strip().lower()
-            if tipo not in ["compra", "venta"]:
-                tipo = "compra"
+            try:
+                # Validación mínima para evitar errores silenciosos
+                if pd.isnull(row["usdt"]) or pd.isnull(row["usd"]) or pd.isnull(row["fee"]) or pd.isnull(row["date"]):
+                    continue
 
-            Transaction.objects.create(
-                usdt=row["usdt"],
-                usd=row["usd"],
-                fee=row["fee"],
-                client=client,
-                date=row["date"],
-                platform=row["platform"],
-                transaction_type=tipo
-            )
+                client, _ = Client.objects.get_or_create(nombre=str(row["client"]).strip().lower())
+                tipo = str(row["transaction_type"]).strip().lower()
+                if tipo not in ["compra", "venta"]:
+                    tipo = "compra"
+
+                Transaction.objects.create(
+                    usdt=float(row["usdt"]),
+                    usd=float(row["usd"]),
+                    fee=float(row["fee"]),
+                    client=client,
+                    date=row["date"],
+                    platform=str(row["platform"]).strip(),
+                    payment_method=str(row["payment_method"]).strip().title(),
+                    transaction_type=tipo
+                )
+            except Exception as err:
+                print(f"❌ Error en fila: {row.to_dict()}")
+                print(f"Detalles: {err}")
+                continue
 
         return JsonResponse({
             "message": "Importación exitosa",
@@ -776,7 +792,7 @@ def import_transactions_from_excel(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-    
+
 
 from transaction.tasks import export_transactions_excel_task
 
@@ -787,6 +803,7 @@ def generar_excel_transacciones(request):
         "message": "📝 Exportación iniciada",
         "task_id": str(task.id)
     })
+
 
 
 #IMAGENES

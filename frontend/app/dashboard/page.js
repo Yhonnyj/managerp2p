@@ -1,33 +1,60 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import useAuth from "@/hooks/useAuth";
 import DashboardStats from "./DashboardStats";
 import ClientsSection from "./ClientsSection";
 import OperationsSection from "./OperationsSection";
 
-export default async function DashboardPage() {
-  let data = null;
+export default function DashboardPage() {
+  useAuth(); // ✅ Redirige si no hay token
 
-  try {
-    const res = await fetch("http://127.0.0.1:8000/api/transaction/dashboard/summary/", {
-      cache: "no-store",
-    });
+  const [data, setData] = useState(null);
+  const [error, setError] = useState("");
 
-    // Manejo de errores: si no es 200 OK
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("❌ Error en el API del dashboard:", res.status, text);
-      throw new Error("No se pudo cargar el resumen del dashboard.");
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem("accessToken");
 
-    // Si todo va bien, parseamos el JSON
-    data = await res.json();
-  } catch (error) {
-    console.error("❌ Error inesperado al obtener el dashboard:", error.message);
-    // Aquí puedes decidir si lanzas el error o muestras un fallback en pantalla
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/transaction/dashboard/summary/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("❌ Error en el API del dashboard:", res.status, text);
+          throw new Error("No se pudo cargar el resumen del dashboard.");
+        }
+
+        const json = await res.json();
+        setData(json);
+      } catch (err) {
+        console.error("❌ Error inesperado al obtener el dashboard:", err.message);
+        setError("Error al cargar el dashboard. Verifica la consola.");
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (error) {
     return (
       <div className="ml-64 min-h-screen bg-gray-900 text-white flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-4">Error al cargar el dashboard</h1>
-          <p className="text-gray-400">Revisa la consola o verifica que el backend esté corriendo.</p>
+          <p className="text-gray-400">{error}</p>
         </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="ml-64 min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <p className="text-gray-300">Cargando dashboard...</p>
       </div>
     );
   }

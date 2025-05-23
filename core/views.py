@@ -33,7 +33,11 @@ def user_profile(request):
         "id": user.id,
         "username": user.username,
         "email": user.email,
+        "nombre": user.first_name,
+        "apellido": user.last_name,
+        "avatar": user.profile.avatar.url if user.profile.avatar else None
     })
+
 
 
 #PERFIL UPDATE

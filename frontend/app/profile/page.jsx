@@ -1,11 +1,15 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Shield, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EditProfileModal from "./EditProfileModal";
+import useAuth from "@/hooks/useAuth"; // 👈 Protección de ruta
 
 export default function ProfilePage() {
+  useAuth(); // 👈 Bloquea si no hay token
+
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -19,7 +23,7 @@ export default function ProfilePage() {
     }
 
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/core/profile/", {
+      const response = await axios.get("http://127.0.0.1:8000/api/auth/user/", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       setUser(response.data);
@@ -62,14 +66,18 @@ export default function ProfilePage() {
         <nav className="space-y-2">
           <button
             onClick={() => setActiveTab("profile")}
-            className={`w-full flex items-center gap-2 px-4 py-2 rounded ${activeTab === "profile" ? "bg-gray-700 text-white" : "text-gray-400 hover:bg-gray-700"}`}
+            className={`w-full flex items-center gap-2 px-4 py-2 rounded ${
+              activeTab === "profile" ? "bg-gray-700 text-white" : "text-gray-400 hover:bg-gray-700"
+            }`}
           >
             <User className="w-4 h-4" />
             Perfil
           </button>
           <button
             onClick={() => setActiveTab("security")}
-            className={`w-full flex items-center gap-2 px-4 py-2 rounded ${activeTab === "security" ? "bg-gray-700 text-white" : "text-gray-400 hover:bg-gray-700"}`}
+            className={`w-full flex items-center gap-2 px-4 py-2 rounded ${
+              activeTab === "security" ? "bg-gray-700 text-white" : "text-gray-400 hover:bg-gray-700"
+            }`}
           >
             <Shield className="w-4 h-4" />
             Seguridad
@@ -87,10 +95,12 @@ export default function ProfilePage() {
               {/* Perfil */}
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center text-2xl font-bold uppercase">
-                  {user.username[0]}
+                  {(user.name || user.username || user.email)[0]}
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold">{user.username}</h3>
+                  <h3 className="text-lg font-semibold">
+                    {user.name || user.username || "Usuario"}
+                  </h3>
                   <p className="text-gray-400">{user.email}</p>
                 </div>
                 <div className="ml-auto">

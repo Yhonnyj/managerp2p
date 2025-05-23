@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
     'core',  # Nuestra app de usuarios
     'transaction',
     'corsheaders',
@@ -171,6 +173,10 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+REST_USE_JWT = True
+DJREST_AUTH_TOKEN_MODEL = None
+
+
 import os
 
 # ✅ Configuración de archivos estáticos
@@ -219,3 +225,4 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 import os
 
 os.environ["CLOUDINARY_URL"] = "cloudinary://491731229974786:9S3U0kCLCfyupx9IhBr5TeG01qU@dgiy5onqs"
+

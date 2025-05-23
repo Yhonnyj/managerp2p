@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import User  # Importamos User desde core
 from cloudinary.models import CloudinaryField
+from datetime import date # Importamos date para usar como valor predeterminado
 
 class Client(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
@@ -67,7 +68,7 @@ class Transaction(models.Model):
         max_length=20, choices=PAYMENT_METHOD_CHOICES, null=True, blank=True
     )
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(default=date.today)
 
     @property
     def sell_price(self):

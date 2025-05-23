@@ -1,8 +1,13 @@
 from django.contrib import admin
 from .models import User, Bank, BankTransaction, FinanceCategory, Transaction  # 👈 Agregamos los nuevos modelos
 
-# USERS
-admin.site.register(User)  # 🚀 Esto permite gestionar usuarios desde el admin de Django
+#NUEVO 
+from core.models import User
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ['id', 'email', 'name', 'is_admin']
+    search_fields = ['email', 'name']
 
 # BANCOS
 @admin.register(Bank)
@@ -32,4 +37,6 @@ class TransactionAdmin(admin.ModelAdmin):
     list_display = ('date', 'amount', 'description', 'category')
     list_filter = ('category', 'date')
     search_fields = ('description',)
+
+
 
