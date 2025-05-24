@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('core.urls')),
 
     # ✅ JWT login, refresh, logout y user
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

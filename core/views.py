@@ -266,3 +266,11 @@ class FinanceAnalyticsView(APIView):
         cache.set(cache_key, response_data, timeout=300)
 
         return Response(response_data)
+
+
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+
+@api_view(['GET'])
+def ping_view(request):
+    return JsonResponse({"status": "ok"})

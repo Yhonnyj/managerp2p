@@ -46,3 +46,12 @@ urlpatterns = [
     # Finanzas - Vista optimizada para análisis
     path('finance/dashboard/', FinanceAnalyticsView.as_view(), name='finance-dashboard'),
 ]
+
+
+from django.urls import path
+from .views import ping_view  # Asegurate de importar la vista
+
+urlpatterns = [
+    path("api/ping/", ping_view),
+    # otras rutas...
+]

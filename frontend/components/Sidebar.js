@@ -75,37 +75,42 @@ export default function Sidebar() {
       </Link>
 
       <nav className="flex flex-col space-y-2 flex-grow text-[16px]">
-        <Link href="/dashboard" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/dashboard" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <Home className="w-6 h-6" />
-          Dashboard
-        </Link>
-        <Link href="/transactions" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/transactions" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <ArrowLeftRight className="w-6 h-6" />
+        <Link
+  href="/dashboard"
+  className={`flex items-center gap-3 px-4 py-2 rounded transition
+    ${currentPath === "/dashboard" ? "bg-orange-400/50" : "hover:bg-orange-400/50"}`}
+>
+  <Home className="w-6 h-6 text-teal-500" />
+  Dashboard
+</Link>
+
+        <Link href="/transactions" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/transactions" ? "bg-orange-400/50" : "hover:bg-orange-400/50"}`}>
+          <ArrowLeftRight className="w-6 h-6 text-teal-500" />
           Transacciones
         </Link>
         <Link href="/clients" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/clients" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <Users className="w-6 h-6" />
+          <Users className="w-6 h-6 text-teal-500" />
           Clientes
         </Link>
         <Link href="/reports" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/reports" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <ChartNoAxesCombined className="w-6 h-6" />
+          <ChartNoAxesCombined className="w-6 h-6 text-teal-500" />
           Reportes
         </Link>
         <Link href="/banks" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/banks" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <Landmark className="w-6 h-6" />
+          <Landmark className="w-6 h-6 text-teal-500" />
           Bancos
         </Link>
         <Link href="/finances" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/finances" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <CreditCard className="w-6 h-6" />
+          <CreditCard className="w-6 h-6 text-teal-500" />
           Finanzas
         </Link>
         <Link href="/categories" className={`flex items-center gap-3 px-4 py-2 rounded transition ${currentPath === "/categories" ? "bg-orange-500" : "hover:bg-orange-400/50"}`}>
-          <FolderKanban className="w-6 h-6" />
+          <FolderKanban className="w-6 h-6 text-teal-500" />
           Categorías
         </Link>
 
         <button onClick={handleLogout} className="mt-2 flex items-center gap-3 px-4 py-2 hover:bg-orange-400/50 text-[16px]">
-          <LogOut className="w-6 h-6" />
+          <LogOut className="w-6 h-6 text-teal-500" />
           Cerrar Sesión
         </button>
       </nav>
