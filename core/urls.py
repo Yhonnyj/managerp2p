@@ -10,18 +10,18 @@ from .views import (
     BankDashboardView,
     FinanceCategoryViewSet,
     TransactionViewSet,
-    FinanceAnalyticsView
+    FinanceAnalyticsView,
+    ping_view
 )
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'banks', BankViewSet, basename='bank')
 router.register(r'finance-categories', FinanceCategoryViewSet, basename='finance-category')
-
-# 🔁 CAMBIO CLAVE AQUÍ — ruta estandarizada como el frontend espera
 router.register(r'transactions', TransactionViewSet, basename='transaction')
 
 urlpatterns = [
+    # Router
     path('', include(router.urls)),
 
     # Auth
@@ -43,15 +43,9 @@ urlpatterns = [
     ),
     path('banks/dashboard/', BankDashboardView.as_view()),
 
-    # Finanzas - Vista optimizada para análisis
+    # Finanzas
     path('finance/dashboard/', FinanceAnalyticsView.as_view(), name='finance-dashboard'),
-]
 
-
-from django.urls import path
-from .views import ping_view  # Asegurate de importar la vista
-
-urlpatterns = [
-    path("api/ping/", ping_view),
-    # otras rutas...
+    # Util
+    path('api/ping/', ping_view),
 ]
