@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-&f_g&vcu@!j$5he%7o%az=+59wts4plpsy$&)y+#=z4w(zp=3v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver", "managerp2p.onrender.com"]
 
 
 
