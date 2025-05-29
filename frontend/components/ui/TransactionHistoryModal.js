@@ -36,12 +36,17 @@ export default function TransactionHistoryModal({ isOpen, onClose, clientId }) {
   const client = clientesData?.find((c) => c.id === parseInt(clientId));
 
   const exportToPDF = () => {
+  if (typeof window !== "undefined") {
     window.open(`http://127.0.0.1:8000/api/transaction/transactions/export/pdf/${clientId}/`, "_blank");
-  };
+  }
+};
 
-  const exportToExcel = () => {
+const exportToExcel = () => {
+  if (typeof window !== "undefined") {
     window.open(`http://127.0.0.1:8000/api/transaction/transactions/export/excel/${clientId}/`, "_blank");
-  };
+  }
+};
+
 
   const getCountryCode = (name) => {
     const country = countries.find((c) => c.name.toLowerCase() === name?.toLowerCase());
