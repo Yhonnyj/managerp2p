@@ -188,9 +188,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "rediss://default:AXiHAAIjcDEwZjBhMmNkOTBmNjc0NWU2OWY5ZjFjYjA5MzFiOTdiYXAxMA@modest-manatee-30855.upstash.io:6379",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SSL": True,
         }
     }
 }
